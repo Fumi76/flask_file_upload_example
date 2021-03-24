@@ -2,6 +2,7 @@ from flask import Flask, request
 import os
 import logging
 import time
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__, static_url_path='/static') 
 
@@ -14,10 +15,16 @@ app.logger.setLevel(logging.DEBUG)
 def upload():
     print('call upload....')
     file = request.files['my_file']
+
+    filename = secure_filename(file.filename)
+    print("filename", filename)
+    # ローカルに保存
+    file.save('/tmp/', "tmp")
+
     # メモリ上に全部持っている？500KBより大きいとファイルに出力するようだ
-    print(vars(file))
-    print(vars(file.stream))
-    print(vars(file.stream._file))
+    #print(vars(file))
+    #print(vars(file.stream))
+    #print(vars(file.stream._file))
 
     # 小さいファイルのときはfilenoでエラーになる io.UnsupportedOperation: fileno
     #print(file.stream._file.fileno())
@@ -28,6 +35,8 @@ def upload():
     #print(file.stream._file.name)
     #print(os.stat(file.stream._file.name).st_size)
     #print(file.stream._file.file)
+
+
     return 'OK!', 200
 
 @app.route('/hello') 
